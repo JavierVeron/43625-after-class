@@ -1,30 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import arrayProductos from "./json/productos.json";
-import ItemCount from "./ItemCount";
-import ItemList from "./ItemList";
+import ItemDetail from "./ItemDetail";
 
-const ItemListContainer = () => {
-    const [items, setItems] = useState([]);
+const ItemDetailContainer = () => {
+    const [item, setItem] = useState([]);
     const {id} = useParams();
 
     useEffect(() => {
         const promesa = new Promise((resolve, reject) => {
             setTimeout(() => {
-                resolve(id ? arrayProductos.filter(item => item.categoria === id) : arrayProductos);
+                resolve(arrayProductos.find(item => item.id === parseInt(id))); //Filtrar mi array de productos y devulevo 1 solo objeto
             }, 2000);
         });
 
         promesa.then((data) => {
-            setItems(data);
+            setItem(data);
         })
     }, [id]);
-    
+
     return (
-        <div className="container">
-            <ItemList items={items} />
+        <div className="container my-5">
+            <ItemDetail item={item} />
         </div>
     )
 }
 
-export default ItemListContainer;
+export default ItemDetailContainer;
