@@ -50,7 +50,7 @@ const Cart = () => {
                                 <td colSpan={2}>&nbsp;</td>
                                 <td className="text-end"><b>Total a Pagar</b></td>
                                 <td className="text-end"><b>${sumTotal()}</b></td>
-                                <td className="text-end"><button className="btn btn-warning">Finalizar Compra</button></td>
+                                <td className="text-end"><Link to={"/checkout"} className="btn btn-warning">Finalizar Compra</Link></td>
                             </tr>
                         </tbody>
                     </table>    
