@@ -1,6 +1,7 @@
-import { addDoc, doc, collection, getFirestore, updateDoc, writeBatch, getDocs } from "firebase/firestore";
+import { addDoc, doc, collection, getFirestore, writeBatch, getDoc } from "firebase/firestore";
 import React, { useContext } from "react";
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
 import { CartContext } from "./context/CartContext";
 
 const Checkout = () => {
@@ -23,29 +24,16 @@ const Checkout = () => {
         const ordersCollection = collection(db, "orders");
         addDoc(ordersCollection, order).then((snapShot) => {
             setOrderId(snapShot.id);
-            const generatedOrder = doc(db, "orders", snapShot.id); //Selecciono la Orden a modificar
-            updateDoc(generatedOrder, {total:order.total * 1.21}); //Actualiza la Orden Generada aplicando un 21% al valor total
-
-            // Modificar un Documento en Batch
-            /* const batch = writeBatch(db);
-            const updatedOrder = doc(db, "orders", snapShot.id);
-            const updatedOrder2 = doc(db, "orders", snapShot.id);
-            batch.update(updatedOrder, {total:10000});
-            batch.set(updatedOrder, {...order, price_friend:sumTotal()*0.9});
-            batch.commit(); //Efectivizar la actualización o seteo de los campos y valores */
-
-            // Modificar todas Ordenes con un valor especifico
-            /* const ordersCollection = collection(db, "orders");
             const batch = writeBatch(db);
-            getDocs(ordersCollection).then(results => {
-                results.docs.map(item => {
-                    let docModificado = doc(db, "orders", item.id);
-                    batch.update(docModificado, {total:item.data()["total"] * 1.10});
+
+            cart.forEach(item => {
+                let producto = doc(db, "items", item.id);
+                getDoc(producto).then((snapShot) => {
+                    batch.update(producto, {stock:snapShot.data().stock - item.quantity});
                 });
-
-                batch.commit();
-            }); */
-
+            });
+            
+            batch.commit();
             clear();
         });
     }
@@ -93,7 +81,7 @@ const Checkout = () => {
             </div>
             <div className="row">
                 <div className="col text-center">
-                    {orderId !== "" ? <div className="alert alert-warning" role="alert">La Orden generada es: <b>{orderId}</b></div> : ""}
+                    {orderId !== "" ? <Navigate to={"/thankyou/" + orderId} /> : ""}
                 </div>
             </div>
         </div>
